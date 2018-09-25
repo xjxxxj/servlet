@@ -1,0 +1,46 @@
+package com.xjx.dao;
+
+import java.util.List;
+
+import com.xjx.pojo.Customer;
+import com.xjx.pojo.CustomerCondition;
+
+public interface CustomerDao {
+	/**
+	 * 添加
+	 * @param customer
+	 */
+	public void insert(Customer customer) ;
+	/**
+	 * 删除
+	 * @param id
+	 */
+	public void deleteById(Integer id) ;
+	/**
+	 * 查询一个
+	 * @param id
+	 * @return
+	 */
+	public Customer findById(Integer id) ;
+	/**
+	 * 查找全部
+	 * @return
+	 */
+	public List<Customer> findAll() ;
+	/**
+	 * 修改
+	 * @param customer
+	 */
+	public void update(Customer customer) ;
+	/**
+	 * 高级查询，根据姓名，性别，生日来查询
+	 * @param condition
+	 * @return
+	 */
+	public List<Customer> findListCustomer(CustomerCondition condition);
+	/**
+	 * 根据id集合删除多个数据
+	 * @param idList
+	 */
+	public void deleteList(List<Integer> idList);
+}

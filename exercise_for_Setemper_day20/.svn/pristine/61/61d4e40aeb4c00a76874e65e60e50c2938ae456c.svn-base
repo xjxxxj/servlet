@@ -1,0 +1,148 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@page import="com.xjx.pojo.Customer"%>
+<%@page import="java.util.List"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CRE-list</title>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/default.css">
+<%
+	String name = "" ;
+	String gender = "" ;
+	String minBirthday = "" ;
+	String maxBirthday = "" ;
+	if(request.getParameter("name") != null){
+		name = request.getParameter("name") ;
+	}
+	if(request.getParameter("gender") != null){
+		gender = request.getParameter("gender") ;
+	}
+	if(request.getParameter("minBirthday") != null){
+		minBirthday = request.getParameter("minBirthday") ;
+	}
+	if(request.getParameter("maxBirthday") != null){
+		maxBirthday = request.getParameter("maxBirthday") ;
+	}
+%>
+</head>
+<body>
+	<div style="margin-top: 2%">
+		<form action="<%=request.getContextPath()%>/customerServlet?method=query" method="post" style="margin: auto;">
+			<h3 align="center">高级查询</h3>
+			<table class="tab-base tab-query" style="margin-left: auto;margin-right: auto;width: 700px">
+				<tr>
+					<td colspan="8" style="border: 0px;text-align: right;">
+						<a href="<%=request.getContextPath()%>">返回首页</a>
+					</td>
+				</tr>
+				<tr>
+					<th>姓名</th>
+					<td>
+					<input type="text" name="name" class="text-input" value="<%=name %>" >
+					</td>
+				</tr>
+				<tr>
+					<th>性别</th>
+					<td>
+						<select name="gender">
+							<option value="" selected="selected">请选择</option>
+							<option value="M" <%=gender.equals("M") ? "selected" : "" %>>男</option>
+							<option value="F" <%=gender.equals("F") ? "selected" : "" %>>女</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>生日</th>
+					<td>
+						<input type="text" name="minBirthday" class="text-input" id="calendar1" readonly="readonly" value="<%=minBirthday%>">至
+						<input type="text" name="maxBirthday" class="text-input" id="calendar2" readonly="readonly" value="<%=maxBirthday%>">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center"><input type="submit" value="提交" class="btn-ok"></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div>
+		<h3 align="center">客户列表</h3>
+		<table class="tab-base" style="margin: auto;">
+		<tr>
+			<td colspan="8" style="border: 0px;text-align: right;">
+				<a href="<%=request.getContextPath()%>/customer/jsp/edit.jsp">添加客户</a>
+				<a type="button" href="<%=request.getContextPath()%>/customerServlet?method=deleteChecked" id="deleteChecked">删除所选</a>
+			</td>
+		</tr>
+		<tr>
+			<th><input type="checkbox" id="allCheck"></th>
+			<th>姓名</th>
+			<th>性别</th>
+			<th style="width: 110px">生日</th>
+			<th style="width: 110px">邮箱</th>
+			<th>电话</th>
+			<th>修改</th>
+			<th>删除</th>
+		</tr>
+		<% 
+		    List<Customer> customers = null ;
+			customers = (List<Customer>)request.getAttribute("customers") ;
+			if(customers != null && customers.size() != 0){
+				for(Customer customer:customers){
+		%>
+			<tr>
+				<td><input type="checkbox" class="customerCheckbox" value="<%=customer.getId()%>"></td>
+				<td><%=customer.getName() %></td>
+				<td><%=customer.getGender().equals("M") ? "男" : "女" %></td>
+				<td><%=customer.getBirthday() %></td>
+				<td><%=customer.getEmail() %></td>
+				<td><%=customer.getPhone() %></td>
+				<td><a class="delete" href="<%=request.getContextPath()%>/customerServlet?method=delete&id=<%=customer.getId()%>">删除</a></td>
+				<td><a href="<%=request.getContextPath()%>/customerServlet?method=toUpdate&id=<%=customer.getId()%>">修改</a></td>
+			</tr>
+		<% }} %>
+	</table>
+	</div>
+	<script src="<%=request.getContextPath()%>/layui/layui.all.js"  ></script>
+	<script src="<%=request.getContextPath()%>/js/jquery-3.3.1.js"  ></script>
+ <script>
+	layui.use('laydate', function(){
+	  var laydate = layui.laydate;	  
+	  //执行一个laydate实例
+	  laydate.render({
+	    elem: '#calendar1' //指定元素
+	  });
+	  laydate.render({
+		    elem: '#calendar2' //指定元素
+		  });
+	});
+	//重复确认删除
+	$(".delete").click(function(){
+		return confirm("确定删除吗？");
+	});
+	
+	//实现全选功能
+	$("#allCheck").click(function() {
+		$(".customerCheckbox").prop("checked" , this.checked) ;
+	}) ;
+	//实现删除所选的功能
+	$("#deleteChecked").click(function(){
+		var url = this.href ;
+		var str = "" ;
+		$(".customerCheckbox").each(function(){
+			if(this.checked){
+				str ="&Customer_" + this.value + "=" + this.value ;
+				url += str ;
+			}
+		});
+		if(str = ""){
+			alert("请选择要删除的选项！")
+			return false ;
+		}
+		$(this).attr("href",url) ;
+		return confirm("确定删除吗？")
+	});
+</script>
+</body>
+</html>
